@@ -28,7 +28,6 @@ var app = {
             alert(title ? (title + ": " + message) : message);
         }
     }
-
 };
 
 app.initialize();
