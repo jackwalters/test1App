@@ -9,8 +9,24 @@ var app = {
         }
     },
     
+    route: function() {
+        var hash = window.location.hash;
+        if (!hash) {
+            $('body').html(new HomeView(this.store).render().el);
+            return;
+        }
+        var match = hash.match(app.detailsURL);
+        if (match) {
+            this.store.findById(Number(match[1]), function(employee) {
+                $('body').html(newEmployeeView(employee).render().el);
+            });
+        }
+    },
+    
     registerEvents: function() {
         var self = this;
+        //listen to URL hash tag changes
+        $(window).on('hashchange', $.proxy(this.route, this));
         //check of browser supports touch events...
         if (document.documentElement.hasOwnProperty('ontouchstart')) {
             // ... if yes: register touch event listnerer to change the "selected state of the item
@@ -30,10 +46,11 @@ var app = {
     
     initialize: function() {
         var self = this;
-        self.registerEvents();
+        this.detailsURL = /^#employees\/(\d{1,})/;
+        this.registerEvents();
         this.store = new MemoryStore(function() {
  //           self.showAlert('Store Initialized', 'Info');
-            $('body').html(new HomeView(self.store).render().el);
+            self.route();
         });
     }
 };
